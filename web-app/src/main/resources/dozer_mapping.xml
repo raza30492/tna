@@ -8,7 +8,7 @@
       <class-a>com.jazasoft.tna.dto.UserDto</class-a>
       <class-b>com.jazasoft.tna.entity.User</class-b>
 
-      <field custom-converter="com.jazasoft.tna.dozer.converter.RoleConverter">
+      <field custom-converter="com.jazasoft.tna.dozerconverter.RoleConverter">
          <a>role</a>
          <b>role</b>
       </field>

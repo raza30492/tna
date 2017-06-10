@@ -1,4 +1,4 @@
-package com.jazasoft.tna.dozer.converter;
+package com.jazasoft.tna.dozerconverter;
 
 import com.jazasoft.tna.entity.Role;
 import org.dozer.DozerConverter;
