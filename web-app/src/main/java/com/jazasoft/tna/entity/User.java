@@ -1,37 +1,52 @@
 package com.jazasoft.tna.entity;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.*;
+import javax.persistence.*;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "user", indexes = @Index(name = "user_index", columnList = "name,email"))
 public class User implements Serializable{
     @Id
-    @Column(name = "USER_ID", nullable = false, unique = true)
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "USERNAME", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "EMAIL", nullable = true, unique = true)
+    @Column(name = "user_name", nullable = false)
+    private String username;
+
+    @Column(name = "email", nullable = true, unique = true)
     private String email;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "ROLE", nullable = false)
+    @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "MOBILE", nullable = true)
+    @Column(name = "mobile", nullable = true)
     private String mobile;
+
+    @Version
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_modified")
+    private Date lastModified;
+
+    @Column(name="freezed")
+    private boolean freezed;
+
+    @ManyToMany
+    @JoinTable(name = "user_buyer",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "buyer_id")
+    )
+    private Set<Buyer> buyers = new HashSet<>();
 
     public User() {
     }
@@ -42,6 +57,15 @@ public class User implements Serializable{
         setPassword(password);
         this.role = role;
         this.mobile = mobile;
+
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getId() {
@@ -93,9 +117,48 @@ public class User implements Serializable{
         this.mobile = mobile;
     }
 
-    @Override
-    public String toString() {
-        return "User{" + "id=" + id + ", name=" + name + ", email=" + email + ", role=" + role + ", mobile=" + mobile + '}';
+    public Date getLastModified() {
+        return lastModified;
     }
 
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public boolean isFreezed() {
+        return freezed;
+    }
+
+    public void setFreezed(boolean freezed) {
+        this.freezed = freezed;
+    }
+
+    public Set<Buyer> getBuyers() {
+        return buyers;
+    }
+
+    public void addBuyer(Buyer buyer) {
+        buyers.add(buyer);
+        buyer.getUsers().add(this);
+    }
+
+    public void removeBuyer(Buyer buyer) {
+        buyers.remove(buyer);
+        buyer.getUsers().remove(this);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", lastModified=" + lastModified +
+                ", freezed=" + freezed +
+                '}';
+    }
 }

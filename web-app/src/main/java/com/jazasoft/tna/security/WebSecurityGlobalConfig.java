@@ -1,4 +1,4 @@
-package com.jazasoft.tna.config;
+package com.jazasoft.tna.security;
 
 import com.jazasoft.tna.dto.UserDto;
 import com.jazasoft.tna.service.UserService;

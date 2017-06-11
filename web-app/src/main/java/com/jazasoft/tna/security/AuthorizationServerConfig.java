@@ -1,4 +1,4 @@
-package com.jazasoft.tna.config;
+package com.jazasoft.tna.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.bind.RelaxedPropertyResolver;

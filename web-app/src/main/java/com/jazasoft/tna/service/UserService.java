@@ -50,8 +50,13 @@ public class UserService {
     }
     
     public UserDto findByUsername(String username) {
-        logger.debug("findByUsername(): name = " , username);
-        return mapper.map(userRepository.findByName(username), UserDto.class);
+        logger.debug("findByUsername(): username = " , username);
+        return mapper.map(userRepository.findByUsername(username), UserDto.class);
+    }
+
+    public UserDto findByName(String name) {
+        logger.debug("findByName(): name = " , name);
+        return mapper.map(userRepository.findByName(name), UserDto.class);
     }
 
     public Boolean exists(Long id) {

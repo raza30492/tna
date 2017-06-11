@@ -13,6 +13,8 @@ public class UserDto {
     @Size(min = 5, max = 100)
     private String name;
 
+    private String username;
+
     @NotNull
     @Pattern(regexp=".+@.+\\..+", message="Incorrect email!")
     private String email;
@@ -30,8 +32,9 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UserDto(String name, String email, String role, String mobile) {
+    public UserDto(String name,String username, String email, String role, String mobile) {
         this.name = name;
+        this.username = username;
         this.email = email;
         this.role = role;
         this.mobile = mobile;
@@ -83,6 +86,14 @@ public class UserDto {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

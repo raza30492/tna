@@ -1,4 +1,4 @@
-package com.jazasoft.tna.config;
+package com.jazasoft.tna.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
