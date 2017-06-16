@@ -19,4 +19,6 @@ public class AppController {
         resources.add(linkBuilder.slash("users").withRel("users"));
         return ResponseEntity.ok(resources);
     }
+
+
 }

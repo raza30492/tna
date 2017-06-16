@@ -34,6 +34,7 @@ public class UserService {
 
     public List<UserDto> findAll() {
         logger.debug("findAll()");
+
         return userRepository.findAll().stream()
                 .map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
@@ -82,7 +83,11 @@ public class UserService {
     public UserDto update(UserDto userDto) {
         logger.debug("update()");
         User user = userRepository.findOne(userDto.getId());
-        user = mapper.map(userDto, User.class);
+
+        if (userDto.getEmail() != null) user.setEmail(userDto.getEmail());
+        if (userDto.getName() != null) user.setName(userDto.getName());
+        if (userDto.getMobile() != null) user.setMobile(userDto.getMobile());
+
         return mapper.map(user, UserDto.class);
     }
     

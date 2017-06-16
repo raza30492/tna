@@ -1,17 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mappings xmlns="http://dozer.sourceforge.net"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://dozer.sourceforge.net
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
    http://dozer.sourceforge.net/schema/beanmapping.xsd">
-    
-    <mapping >
-      <class-a>com.jazasoft.tna.dto.UserDto</class-a>
-      <class-b>com.jazasoft.tna.entity.User</class-b>
 
-      <field custom-converter="com.jazasoft.tna.dozerconverter.RoleConverter">
-         <a>role</a>
-         <b>role</b>
-      </field>
-      
-   </mapping> 
+    <mapping map-null="false">
+        <class-a>com.jazasoft.tna.dto.UserDto</class-a>
+        <class-b>com.jazasoft.tna.entity.User</class-b>
+
+        <field custom-converter="com.jazasoft.tna.dozerconverter.RoleConverter">
+            <a>role</a>
+            <b>role</b>
+        </field>
+
+        <field-exclude>
+            <a>password</a>
+            <b>password</b>
+        </field-exclude>
+
+    </mapping>
+
+    <mapping>
+        <class-a>com.jazasoft.tna.dto.OrderDto</class-a>
+        <class-b>com.jazasoft.tna.entity.Order</class-b>
+
+        <field custom-converter="com.jazasoft.tna.dozerconverter.LongLabelConverter">
+            <a>label</a>
+            <b>label</b>
+        </field>
+
+        <field custom-converter="com.jazasoft.tna.dozerconverter.LongDateConverter">
+            <a>orderAt</a>
+            <b>orderAt</b>
+        </field>
+
+        <field custom-converter="com.jazasoft.tna.dozerconverter.LongDateConverter">
+            <a>lastModified</a>
+            <b>lastModified</b>
+        </field>
+
+
+    </mapping>
+
 </mappings>

@@ -1,61 +1,58 @@
-package com.jazasoft.tna.entity;
+package com.jazasoft.tna.dto;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import com.jazasoft.tna.entity.Label;
+import com.jazasoft.tna.entity.OrderDetail;
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by mtalam on 6/10/2017.
+ * Created by mtalam on 6/14/2017.
  */
-@Entity
-@Table(name="orders", indexes = @Index(name = "order_index",columnList = "order_ref,label_id"))
-public class Order implements Serializable {
+public class OrderDto {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "order_ref", nullable=false, unique = true )
+    @NotNull
+    @Size(min = 1, max = 100)
     private String orderRef;
 
-    @Column(name="style", nullable = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     private String style;
 
-    @Column(name ="season", nullable = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     private String season;
 
-    @Column(name="qty", nullable = false)
+    @NotNull
+    @Min(1)
     private Long qty;
 
-    @Column(name="order_at" , nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date orderAt;
+    @NotNull
+    private long orderAt;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="label_id",foreignKey = @ForeignKey(name = "label_order_fk"))
-    private Label label;
+    @NotNull
+    private Long label;
 
-    @Version
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_modified")
-    private  Date lastModified;
+    private  long lastModified;
 
-    @OneToMany(mappedBy = "order")
     private Set<OrderDetail> odereDetails =  new HashSet<>();
 
-
-    public Order() {
-    }
-
-    public Order(Long id, String orderRef, String style, String season, Long qty, Date orderAt) {
-        this.id = id;
+    public OrderDto(String orderRef, String style, String season, Long qty, long orderAt, Long label, long lastModified) {
         this.orderRef = orderRef;
         this.style = style;
         this.season = season;
         this.qty = qty;
         this.orderAt = orderAt;
+        this.label = label;
+        this.lastModified = lastModified;
     }
 
     public Long getId() {
@@ -98,28 +95,28 @@ public class Order implements Serializable {
         this.qty = qty;
     }
 
-    public Date getOrderAt() {
+    public long getOrderAt() {
         return orderAt;
     }
 
-    public void setOrderAt(Date orderAt) {
+    public void setOrderAt(long orderAt) {
         this.orderAt = orderAt;
     }
 
-    public Date getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
-
-    public Label getLabel() {
+    public Long getLabel() {
         return label;
     }
 
-    public void setLabel(Label label) {
+    public void setLabel(Long label) {
         this.label = label;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(long lastModified) {
+        this.lastModified = lastModified;
     }
 
     public Set<OrderDetail> getOdereDetails() {
@@ -132,7 +129,7 @@ public class Order implements Serializable {
 
     @Override
     public String toString() {
-        return "Order{" +
+        return "OrderDto{" +
                 "id=" + id +
                 ", orderRef='" + orderRef + '\'' +
                 ", style='" + style + '\'' +
