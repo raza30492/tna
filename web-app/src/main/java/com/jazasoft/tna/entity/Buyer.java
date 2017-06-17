@@ -21,6 +21,7 @@ public class Buyer implements Serializable{
     @Column(name = "name", nullable = false)
     private String name;
 
+
     @OneToMany(mappedBy = "buyer")
     private Set<Label> labels = new HashSet<>();
 
@@ -93,7 +94,6 @@ public class Buyer implements Serializable{
         return "Buyer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", labels=" + labels +
                 ", users=" + users +
                 ", freezed=" + freezed +
                 ", lastModified=" + lastModified +

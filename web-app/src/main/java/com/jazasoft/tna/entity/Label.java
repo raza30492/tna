@@ -1,5 +1,7 @@
 package com.jazasoft.tna.entity;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -19,6 +21,7 @@ public class Label implements Serializable {
     @Column(name = "name", nullable = false)
     private String label;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name="buyer_id",foreignKey = @ForeignKey(name = "buyer_label_fk"))
     private Buyer buyer;
@@ -83,7 +86,6 @@ public class Label implements Serializable {
         return "Label{" +
                 "id=" + id +
                 ", label='" + label + '\'' +
-                ", buyer=" + buyer +
                 ", orders=" + orders +
                 ", activities=" + activities +
                 '}';

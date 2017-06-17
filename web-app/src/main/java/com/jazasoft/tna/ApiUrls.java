@@ -18,6 +18,4 @@ public class ApiUrls {
     public static final String URL_BUYERS_BUYER = "/{buyerId}";
     public static final String URL_BUYERS_BUYER_LABELS = "/{buyerId}/labels";
     public static final String URL_BUYERS_BUYER_LABELS_LABEL = "/{buyerId}/labels/{labelId}";
-
-
 }
