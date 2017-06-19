@@ -18,4 +18,19 @@ public class ApiUrls {
     public static final String URL_BUYERS_BUYER = "/{buyerId}";
     public static final String URL_BUYERS_BUYER_LABELS = "/{buyerId}/labels";
     public static final String URL_BUYERS_BUYER_LABELS_LABEL = "/{buyerId}/labels/{labelId}";
+    public static final String URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES="/{buyerId}/labels/{labelId}/activities";
+    public static final String URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY=
+            "/{buyerId}/labels/{labelId}/activities/ativityId";
+    public static final String URL_BUYERS_BUYER_LABELS_LABEL_ORDERS="/{buyerId}/labels/{labelId}/orders";
+    public static final String URL_BUYERS_BUYER_LABELS_LABEL_ORDERS_ORDER="/{buyerId}/labels/{labelId}/orders/{orderId}";
+
+    /*Activity Names Resources*/
+    public static final String ROOT_URL_ACTIVITYNAMES="/api/activitynames";
+    public static final String URL_ACTIVITYNAMES_ACTIVITYNAME="/{activitynameId}";
+
+    /*  OrderDetail Resources */
+
+    public static final String ROOT_URL_ORDERDETAILS="/api/orderdetails";
+    public static final String URL_ORDERDETAILS_ORDERDETAIL="/{orderdetailId}";
+
 }
