@@ -1,5 +1,7 @@
 package com.jazasoft.tna.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -33,8 +35,9 @@ public class Order implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderAt;
 
+    @JsonIgnore
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name="label_id",foreignKey = @ForeignKey(name = "label_order_fk"))
+    @JoinColumn(name="label_id", nullable=false,foreignKey = @ForeignKey(name = "label_order_fk"))
     private Label label;
 
     @Version
@@ -139,7 +142,7 @@ public class Order implements Serializable {
                 ", season='" + season + '\'' +
                 ", qty=" + qty +
                 ", orderAt=" + orderAt +
-                ", label=" + label +
+
                 ", lastModified=" + lastModified +
                 ", odereDetails=" + odereDetails +
                 '}';

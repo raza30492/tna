@@ -3,6 +3,7 @@ package com.jazasoft.tna.service;
 import com.jazasoft.tna.dto.OrderDto;
 import com.jazasoft.tna.entity.Label;
 import com.jazasoft.tna.entity.Order;
+import com.jazasoft.tna.respository.LabelRepository;
 import com.jazasoft.tna.respository.OrderRepository;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,9 @@ public class OrderService {
 
     @Autowired OrderRepository orderRepository;
 
+    @Autowired
+    LabelRepository labelRepository;
+
     @Autowired Mapper mapper;
 
     public Order findOne(Long id){
@@ -33,14 +38,14 @@ public class OrderService {
 
 
 
-    public OrderDto findAllByLabel(Label label){
+    public OrderDto findByLabel(Label label){
         return mapper.map(orderRepository.findByLabel(label),OrderDto.class);
     }
 
-    public List<OrderDto> findAll() {
-        logger.debug("findAll()");
+    public List<OrderDto> findAllByLabel(Label label) {
+        logger.debug("findByLabel()");
 
-        return orderRepository.findAll().stream()
+        return orderRepository.findByLabel(label).stream()
                 .map(order -> mapper.map(order, OrderDto.class))
                 .collect(Collectors.toList());
     }
@@ -56,16 +61,24 @@ public class OrderService {
     }
 
     @Transactional
-    public Order Save(Order order){
+    public OrderDto Save(OrderDto orderDto){
         logger.debug("save()");
-        return orderRepository.save(order);
+        //Label label = labelRepository.findOne(orderDto.getLabel().getId());
+        //System.out.println("lebel is////////"+label);
+        Order order = mapper.map(orderDto, Order.class );
+        //order.setLabel(orderDto.getLabel());
+        order.setOrderAt(new Date());
+        order=orderRepository.save(order);
+        return mapper.map(order,OrderDto.class);
     }
     @Transactional
-    public Order update(Order order){
+    public OrderDto update(OrderDto orderDto){
         logger.debug("update()");
-        Order order1 = orderRepository.findOne(order.getId());
-        mapper.map(order,order1);
-        return order1;
+        Order order1 = orderRepository.findOne(orderDto.getId());
+        Order order2 = mapper.map(orderDto,Order.class);
+        order2.setOrderAt(new Date());
+        mapper.map(order2,order1);
+        return mapper.map(order1,OrderDto.class);
     }
     @Transactional
     public void delete(Long id){

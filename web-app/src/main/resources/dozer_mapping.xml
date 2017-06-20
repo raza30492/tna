@@ -21,10 +21,15 @@
     </mapping>
 
     <mapping>
-        <class-a>com.jazasoft.tna.dto.OrderDto</class-a>
-        <class-b>com.jazasoft.tna.entity.Order</class-b>
+        <class-a>com.jazasoft.tna.entity.Order</class-a>
+        <class-b>com.jazasoft.tna.dto.OrderDto</class-b>
 
-        <field custom-converter="com.jazasoft.tna.dozerconverter.LongLabelConverter">
+        <!--<field-exclude>-->
+            <!--<a>label</a>-->
+            <!--<b>label</b>-->
+        <!--</field-exclude>-->
+
+        <field copy-by-reference="true">
             <a>label</a>
             <b>label</b>
         </field>

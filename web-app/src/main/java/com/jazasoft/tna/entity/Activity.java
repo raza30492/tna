@@ -1,5 +1,7 @@
 package com.jazasoft.tna.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -20,10 +22,16 @@ public class Activity implements Serializable {
     @Column(name="lead_time", nullable = false)
     private Long leadTime;
 
+
+
+    @Transient
+    private Long activityNameId;
+
     @ManyToOne(optional = false)
     @JoinColumn(name="activity_name_id",foreignKey = @ForeignKey(name = "activityName_activity_fk"))
     private ActivityName activityName;
 
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name="label_id",foreignKey = @ForeignKey(name = "label_activity_fk"))
     private Label label;
@@ -37,10 +45,12 @@ public class Activity implements Serializable {
     public Activity() {
     }
 
-    public Activity(Long id,  Long leadTime) {
+    public Activity(Long id,  Long leadTime, Long activityNameId) {
         this.id = id;
         this.leadTime = leadTime;
+        this.activityNameId=activityNameId;
     }
+
 
     public Long getId() {
         return id;
@@ -82,13 +92,21 @@ public class Activity implements Serializable {
         this.lastModified = lastModified;
     }
 
+    public Long getActivityNameId() {
+        return activityNameId;
+    }
+
+    public void setActivityNameId(Long activityNameId) {
+        this.activityNameId = activityNameId;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
                 "id=" + id +
                 ", leadTime=" + leadTime +
-                ", activityName=" + activityName +
-                ", label=" + label +
+
+
                 ", lastModified=" + lastModified +
                 '}';
     }

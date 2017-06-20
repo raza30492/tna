@@ -85,7 +85,7 @@ public class Label implements Serializable {
     public String toString() {
         return "Label{" +
                 "id=" + id +
-                ", label='" + label + '\'' +
+
                 ", orders=" + orders +
                 ", activities=" + activities +
                 '}';

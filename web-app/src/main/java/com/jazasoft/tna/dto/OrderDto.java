@@ -1,5 +1,6 @@
 package com.jazasoft.tna.dto;
 
+import com.jazasoft.tna.entity.Buyer;
 import com.jazasoft.tna.entity.Label;
 import com.jazasoft.tna.entity.OrderDetail;
 import org.hibernate.validator.constraints.Range;
@@ -18,6 +19,8 @@ import java.util.Set;
 public class OrderDto {
 
     private Long id;
+
+    private Label label;
 
     @NotNull
     @Size(min = 1, max = 100)
@@ -38,14 +41,14 @@ public class OrderDto {
     @NotNull
     private long orderAt;
 
-    @NotNull
-    private Long label;
-
     private  long lastModified;
 
     private Set<OrderDetail> odereDetails =  new HashSet<>();
 
-    public OrderDto(String orderRef, String style, String season, Long qty, long orderAt, Long label, long lastModified) {
+    public OrderDto() {
+    }
+
+    public OrderDto(String orderRef, String style, String season, Long qty, long orderAt, Label label, long lastModified) {
         this.orderRef = orderRef;
         this.style = style;
         this.season = season;
@@ -103,11 +106,11 @@ public class OrderDto {
         this.orderAt = orderAt;
     }
 
-    public Long getLabel() {
+    public Label getLabel() {
         return label;
     }
 
-    public void setLabel(Long label) {
+    public void setLabel(Label label) {
         this.label = label;
     }
 
