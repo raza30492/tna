@@ -35,7 +35,7 @@ public class ApiUrls {
 
     /*  OrderDetail Resources */
 
-    public static final String ROOT_URL_ORDERDETAILS="/api/orderdetails";
-    public static final String URL_ORDERDETAILS_ORDERDETAIL="/{orderdetailId}";
+    public static final String ROOT_URL_ORDER_DETAILS ="/api/orderDetails";
+
 
 }

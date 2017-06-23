@@ -49,27 +49,21 @@ public class BuyerRestController {
     @Autowired
     BuyerService buyerService;
 
-    @Autowired
-    Mapper mapper;
+    @Autowired Mapper mapper;
 
-    @Autowired
-    BuyerAssembler buyerAssembler;
-    @Autowired
-    LabelService labelService;
-    @Autowired
-    LabelAssembler labelAssembler;
+    @Autowired BuyerAssembler buyerAssembler;
 
-    @Autowired
-    OrderService orderService;
+    @Autowired LabelService labelService;
 
-    @Autowired
-    OrderAssembler orderAssembler;
+    @Autowired LabelAssembler labelAssembler;
 
-    @Autowired
-    ActivityService activityService;
+    @Autowired OrderService orderService;
 
-    @Autowired
-    ActivityAssembler activityAssembler;
+    @Autowired OrderAssembler orderAssembler;
+
+    @Autowired ActivityService activityService;
+
+    @Autowired ActivityAssembler activityAssembler;
 
     @GetMapping
     public ResponseEntity<?> listAllBuyers() {
@@ -228,7 +222,179 @@ public class BuyerRestController {
 
     }
 
-     // / /////////////////// /* Api For Order  *///////////////////////////////////////////////////////////////////
+    //////////////////////////// ACTIVITY API /////////////////////////////////////////////////////////////////////////
+@GetMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES)
+public ResponseEntity<?> LoadBuyersLabelActivities(
+        @PathVariable("buyerId") Long buyerId,
+        @PathVariable("labelId") Long labelId) {
+    logger.debug("LoadBuyersLabelActivities(): buyerId = {}, labelId = {}", buyerId, labelId);
+    Buyer buyer = buyerService.findOne(buyerId);
+    RestError error;
+    if (buyer == null) {
+        error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+    Label label = buyer.getLabels().stream()
+            .filter(l -> l.getId().equals(labelId))
+            .findAny().orElse(null);
+    if (label == null) {
+        String msg = "label with id = " + label + " not found in " + buyer;
+        error = new RestError(404, 404, msg, "", "");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    List<Activity> activities = activityService.findAllByLabel(label);
+    return new ResponseEntity<>(activityAssembler.toResources( activities), HttpStatus.OK);
+}
+
+@GetMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY)
+  public  ResponseEntity<?> LoadBuyersLabelActivity(@PathVariable("buyerId") Long buyerId,
+                                                    @PathVariable("labelId") Long labelId,
+                                                    @PathVariable("activityId") Long activityId){
+    logger.debug("LoadBuyersLabelActivity(): buyerId = {}, labelId = {}, activityId", buyerId, labelId,activityId);
+    Buyer buyer = buyerService.findOne(buyerId);
+    RestError error;
+    if (buyer == null) {
+        error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+    Label label = buyer.getLabels().stream()
+            .filter(l -> l.getId().equals(labelId))
+            .findAny().orElse(null);
+    if (label == null) {
+        String msg = "label with id = " + label + " not found in " + buyer;
+        error = new RestError(404, 404, msg, "", "");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+    Activity activity = label.getActivities().stream()
+            .filter(a -> a.getId().equals(activityId))
+            .findAny().orElse(null);
+
+    if (activity == null) {
+        String msg = "Activity with id = " + activityId + " not found in " + label + " and  " + buyer;
+        error = new RestError(404, 404, msg, "", "");
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+    return new ResponseEntity<>(activityAssembler.toResource(activity), HttpStatus.OK);
+}
+
+    @PostMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES)
+    public ResponseEntity<?> createBuyerLabelActivity
+            (@PathVariable("buyerId") Long buyerId,
+             @PathVariable("labelId") Long labelId,
+             @Valid @RequestBody Activity activity){
+
+        logger.debug("createBuyerLabelActivity(): buyerId= {} , labelId = {}, {}", buyerId, labelId, activity);
+        /*///////Checking for Duplicate Id///////*/
+        if (activity.getId() != null && activityService.exists(activity.getId())) {
+            String msg = "Duplicate Id.";
+            RestError error = new RestError(409, 409, msg, "", "");
+            return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        }
+
+        /*///////////////////checking if Buyer and Label exist ////////////*/
+        Buyer buyer = buyerService.findOne(buyerId);
+        RestError error;
+        if (buyer == null) {
+            error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+
+        }
+        Label label = buyer.getLabels().stream()
+                .filter(l -> l.getId().equals(labelId))
+                .findAny().orElse(null);
+        if (label == null) {
+            String msg = "Label with id = " + labelId + " not found in Buyer: " + buyer.getName();
+            error = new RestError(404, 404, msg, "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+        System.out.println("lebel is////////"+label);
+        activity.setLabel(label);
+        activity = activityService.Save(activity);
+        return new ResponseEntity<>(activityAssembler.toResource(activity), HttpStatus.OK);
+    }
+
+    @PutMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY)
+    public ResponseEntity<?> updateBuyerLabelActivity(
+            @PathVariable("buyerId") long buyerId,
+            @PathVariable("labelId") Long labelId,
+            @PathVariable("activityId") Long activityId,
+            @Valid @RequestBody Activity activity) {
+
+        logger.debug("updateBuyerLabelActivity(): buyerId= {} , labelId = {}, activityId = {}, {}", buyerId, labelId,activityId, activity);
+        /*///////////////////checking if Buyer, Label and Activity exist ////////////*/
+        Buyer buyer = buyerService.findOne(buyerId);
+        RestError error;
+        if (buyer == null) {
+            error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+
+        }
+        Label label = buyer.getLabels().stream()
+                .filter(l -> l.getId().equals(labelId))
+                .findAny().orElse(null);
+        if (label == null) {
+            String msg = "Label with id = " + labelId + " not found in Buyer: " + buyer.getName();
+            error = new RestError(404, 404, msg, "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        Activity activity1 = label.getActivities().stream()
+                .filter(a -> a.getId().equals(activityId))
+                .findAny().orElse(null);
+
+        if (activity1 == null) {
+            String msg = "Activity with id = " + activityId + " not found in Label:  " + label.getLabel() + ", Buyer: " + buyer.getName();
+            error = new RestError(404, 404, msg, "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        activity.setId(activityId);
+        activity.setLabel(label);
+        activity = activityService.update(activity);
+        return new ResponseEntity<>(activityAssembler.toResource(activity), HttpStatus.OK);
+    }
+
+
+    @DeleteMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY)
+    public ResponseEntity<?> deleteBuyerLabelActivity(
+            @PathVariable("buyerId") long buyerId,
+            @PathVariable("labelId") Long labelId,
+            @PathVariable("activityId") Long activityId) {
+
+        logger.debug("deleteBuyerLabelActivity(): buyerId= {} , labelId = {}, activityId = {}, {}", buyerId, labelId, activityId);
+
+        /*///////////////////checking if Buyer, Label and Order exist ////////////*/
+        Buyer buyer = buyerService.findOne(buyerId);
+        RestError error;
+        if (buyer == null) {
+            error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+
+        }
+        Label label = buyer.getLabels().stream()
+                .filter(l -> l.getId().equals(labelId))
+                .findAny().orElse(null);
+        if (label == null) {
+            String msg = "Label with id = " + labelId + " not found in Buyer: " + buyer.getName();
+            error = new RestError(404, 404, msg, "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        Activity activity = label.getActivities().stream()
+                .filter(o -> o.getId().equals(activityId))
+                .findAny().orElse(null);
+
+        if (activity == null) {
+            String msg = "Activity with id = " + activityId + " not found in Label:  " + label.getLabel() + ", Buyer: " + buyer.getName();
+            error = new RestError(404, 404, msg, "", "");
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+        activityService.delete(activityId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // / /////////////////// /* Api For Order  *///////////////////////////////////////////////////////////////////
 
     @GetMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ORDERS)
     public ResponseEntity<?> LoadBuyersBuyerOrders(
@@ -360,12 +526,9 @@ public class BuyerRestController {
             error = new RestError(404, 404, msg, "", "");
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
-
         orderDto.setId(orderId);
         orderDto.setLabel(label);
         orderDto = orderService.update(orderDto);
-
-
         return new ResponseEntity<>(orderAssembler.toResource(orderDto), HttpStatus.OK);
     }
 
@@ -376,8 +539,6 @@ public class BuyerRestController {
             @PathVariable("orderId") Long orderId){
 
         logger.debug("deleteBuyerLabelOrder(): buyerId= {} , labelId = {}, orderId = {}, {}", buyerId, labelId,orderId);
-
-
         /*///////////////////checking if Buyer, Label and Order exist ////////////*/
         Buyer buyer = buyerService.findOne(buyerId);
         RestError error;
@@ -405,195 +566,8 @@ public class BuyerRestController {
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
 
-
         orderService.delete(orderId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
-
-    //////////////////////////// ACTIVITY API /////////////////////////////////////////////////////////////////////////
-@GetMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES)
-public ResponseEntity<?> LoadBuyersLabelActivities(
-        @PathVariable("buyerId") Long buyerId,
-        @PathVariable("labelId") Long labelId) {
-    logger.debug("LoadBuyersLabelActivities(): buyerId = {}, labelId = {}", buyerId, labelId);
-    Buyer buyer = buyerService.findOne(buyerId);
-    RestError error;
-    if (buyer == null) {
-        error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-    Label label = buyer.getLabels().stream()
-            .filter(l -> l.getId().equals(labelId))
-            .findAny().orElse(null);
-    if (label == null) {
-        String msg = "label with id = " + label + " not found in " + buyer;
-        error = new RestError(404, 404, msg, "", "");
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    List<Activity> activities = activityService.findAllByLabel(label);
-    return new ResponseEntity<>(activityAssembler.toResources( activities), HttpStatus.OK);
-}
-
-@GetMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY)
-  public  ResponseEntity<?> LoadBuyersLabelActivity(@PathVariable("buyerId") Long buyerId,
-                                                    @PathVariable("labelId") Long labelId,
-                                                    @PathVariable("activityId") Long activityId){
-    logger.debug("LoadBuyersLabelActivity(): buyerId = {}, labelId = {}, activityId", buyerId, labelId,activityId);
-    Buyer buyer = buyerService.findOne(buyerId);
-    RestError error;
-    if (buyer == null) {
-        error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-    Label label = buyer.getLabels().stream()
-            .filter(l -> l.getId().equals(labelId))
-            .findAny().orElse(null);
-    if (label == null) {
-        String msg = "label with id = " + label + " not found in " + buyer;
-        error = new RestError(404, 404, msg, "", "");
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-    Activity activity = label.getActivities().stream()
-            .filter(a -> a.getId().equals(activityId))
-            .findAny().orElse(null);
-
-    if (activity == null) {
-        String msg = "Activity with id = " + activityId + " not found in " + label + " and  " + buyer;
-        error = new RestError(404, 404, msg, "", "");
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-    return new ResponseEntity<>(activityAssembler.toResource(activity), HttpStatus.OK);
-}
-
-    @PostMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES)
-    public ResponseEntity<?> createBuyerLabelActivity(@PathVariable("buyerId") Long buyerId,
-                                                      @PathVariable("labelId") Long labelId,
-                                                      @Valid @RequestBody Activity activity){
-
-        logger.debug("createBuyerLabelActivity(): buyerId= {} , labelId = {}, {}", buyerId, labelId, activity);
-        /*///////Checking for Duplicate Id///////*/
-        if (activity.getId() != null && activityService.exists(activity.getId())) {
-            String msg = "Duplicate Id.";
-            RestError error = new RestError(409, 409, msg, "", "");
-            return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-        }
-
-        /*///////////////////checking if Buyer and Label exist ////////////*/
-        Buyer buyer = buyerService.findOne(buyerId);
-        RestError error;
-        if (buyer == null) {
-            error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-
-        }
-        Label label = buyer.getLabels().stream()
-                .filter(l -> l.getId().equals(labelId))
-                .findAny().orElse(null);
-        if (label == null) {
-            String msg = "Label with id = " + labelId + " not found in Buyer: " + buyer.getName();
-            error = new RestError(404, 404, msg, "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
-        System.out.println("lebel is////////"+label);
-        activity.setLabel(label);
-        activity = activityService.Save(activity);
-
-
-        return new ResponseEntity<>(activityAssembler.toResource(activity), HttpStatus.OK);
-
-    }
-
-
-    @PutMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY)
-    public ResponseEntity<?> updateBuyerLabelActivity(
-            @PathVariable("buyerId") long buyerId,
-            @PathVariable("labelId") Long labelId,
-            @PathVariable("activityId") Long activityId,
-            @Valid @RequestBody Activity activity) {
-
-        logger.debug("updateBuyerLabelActivity(): buyerId= {} , labelId = {}, activityId = {}, {}", buyerId, labelId,activityId, activity);
-
-
-        /*///////////////////checking if Buyer, Label and Activity exist ////////////*/
-        Buyer buyer = buyerService.findOne(buyerId);
-        RestError error;
-        if (buyer == null) {
-            error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-
-        }
-        Label label = buyer.getLabels().stream()
-                .filter(l -> l.getId().equals(labelId))
-                .findAny().orElse(null);
-        if (label == null) {
-            String msg = "Label with id = " + labelId + " not found in Buyer: " + buyer.getName();
-            error = new RestError(404, 404, msg, "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
-
-        Activity activity1 = label.getActivities().stream()
-                .filter(a -> a.getId().equals(activityId))
-                .findAny().orElse(null);
-
-        if (activity1 == null) {
-            String msg = "Activity with id = " + activityId + " not found in Label:  " + label.getLabel() + ", Buyer: " + buyer.getName();
-            error = new RestError(404, 404, msg, "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
-
-        activity.setId(activityId);
-        activity.setLabel(label);
-        activity = activityService.update(activity);
-
-
-        return new ResponseEntity<>(activityAssembler.toResource(activity), HttpStatus.OK);
-    }
-
-
-    @DeleteMapping(ApiUrls.URL_BUYERS_BUYER_LABELS_LABEL_ACTIVITIES_ACTIVITY)
-    public ResponseEntity<?> deleteBuyerLabelActivity(
-            @PathVariable("buyerId") long buyerId,
-            @PathVariable("labelId") Long labelId,
-            @PathVariable("activityId") Long activityId){
-
-        logger.debug("deleteBuyerLabelActivity(): buyerId= {} , labelId = {}, activityId = {}, {}", buyerId, labelId,activityId);
-
-
-        /*///////////////////checking if Buyer, Label and Order exist ////////////*/
-        Buyer buyer = buyerService.findOne(buyerId);
-        RestError error;
-        if (buyer == null) {
-            error = new RestError(404, 404, "Buyer with id = " + buyerId + " not found", "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-
-        }
-        Label label = buyer.getLabels().stream()
-                .filter(l -> l.getId().equals(labelId))
-                .findAny().orElse(null);
-        if (label == null) {
-            String msg = "Label with id = " + labelId + " not found in Buyer: " + buyer.getName();
-            error = new RestError(404, 404, msg, "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
-
-        Activity activity = label.getActivities().stream()
-                .filter(o -> o.getId().equals(activityId))
-                .findAny().orElse(null);
-
-        if (activity == null) {
-            String msg = "Activity with id = " + activityId + " not found in Label:  " + label.getLabel() + ", Buyer: " + buyer.getName();
-            error = new RestError(404, 404, msg, "", "");
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-        }
-
-
-       activityService.delete(activityId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
-    }
-
-
-
 }

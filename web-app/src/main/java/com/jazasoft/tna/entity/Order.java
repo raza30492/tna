@@ -45,8 +45,8 @@ public class Order implements Serializable {
     @Column(name = "last_modified")
     private  Date lastModified;
 
-    @OneToMany(mappedBy = "order")
-    private Set<OrderDetail> odereDetails =  new HashSet<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderDetail> orderDetails =  new HashSet<>();
 
 
     public Order() {
@@ -125,12 +125,13 @@ public class Order implements Serializable {
         this.label = label;
     }
 
-    public Set<OrderDetail> getOdereDetails() {
-        return odereDetails;
+    public Set<OrderDetail> getOrderDetails() {
+        return orderDetails;
     }
 
-    public void setOdereDetails(Set<OrderDetail> odereDetails) {
-        this.odereDetails = odereDetails;
+    public void addOrderDetail(OrderDetail orderDetail){
+        orderDetail.setOrder(this);
+        orderDetails.add(orderDetail);
     }
 
     @Override
@@ -142,9 +143,7 @@ public class Order implements Serializable {
                 ", season='" + season + '\'' +
                 ", qty=" + qty +
                 ", orderAt=" + orderAt +
-
                 ", lastModified=" + lastModified +
-                ", odereDetails=" + odereDetails +
                 '}';
     }
 }

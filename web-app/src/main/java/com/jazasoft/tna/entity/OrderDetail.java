@@ -1,5 +1,7 @@
 package com.jazasoft.tna.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -22,6 +24,7 @@ public class OrderDetail implements Serializable {
     private  String remarks;
 
 
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name="order_id",foreignKey = @ForeignKey(name = "order_orderDetails_fk"))
     private Order order;
@@ -29,8 +32,6 @@ public class OrderDetail implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(name="activity_id",foreignKey = @ForeignKey(name = "activity_orderDetails_fk"))
     private Activity activity ;
-
-
 
     public OrderDetail() {
     }

@@ -1,13 +1,16 @@
 package com.jazasoft.tna;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jazasoft.tna.dto.UserDto;
 import com.jazasoft.tna.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +19,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.stereotype.Controller;
@@ -36,8 +40,6 @@ public class Application extends SpringBootServletInitializer{
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(Application.class);
     }
-    
-    
     
     @Bean
     CommandLineRunner init(
@@ -68,4 +70,5 @@ public class Application extends SpringBootServletInitializer{
         logger.debug("home page");
         return new ResponseEntity<>("Hello World", HttpStatus.OK);
     }
+
 }

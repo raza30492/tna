@@ -28,11 +28,9 @@ public class LabelAssembler extends ResourceAssemblerSupport<Label,Resource> {
     public Resource toResource(Label label) {
         Collection<Link> links = new ArrayList<>();
         links.add(linkTo(methodOn(BuyerRestController.class)
-                .loadBuyerLabel(label.getId(),label.getBuyer().getId()))
+                .loadBuyerLabel(label.getBuyer().getId(),label.getId()))
                 .withSelfRel()
         );
-
-        links.add(linkTo(methodOn(BuyerRestController.class).getBuyer(label.getBuyer().getId())).withRel("Buyer"));
         return new Resource<>(label, links);
     }
 }

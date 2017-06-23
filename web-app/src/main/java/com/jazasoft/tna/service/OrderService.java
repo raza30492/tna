@@ -1,8 +1,10 @@
 package com.jazasoft.tna.service;
 
 import com.jazasoft.tna.dto.OrderDto;
+import com.jazasoft.tna.entity.Activity;
 import com.jazasoft.tna.entity.Label;
 import com.jazasoft.tna.entity.Order;
+import com.jazasoft.tna.entity.OrderDetail;
 import com.jazasoft.tna.respository.LabelRepository;
 import com.jazasoft.tna.respository.OrderRepository;
 import org.dozer.Mapper;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -63,10 +66,15 @@ public class OrderService {
     @Transactional
     public OrderDto Save(OrderDto orderDto){
         logger.debug("save()");
-        //Label label = labelRepository.findOne(orderDto.getLabel().getId());
-        //System.out.println("lebel is////////"+label);
         Order order = mapper.map(orderDto, Order.class );
-        //order.setLabel(orderDto.getLabel());
+
+        Set<Activity> activities = order.getLabel().getActivities();
+        OrderDetail orderDetail = null;
+        for (Activity activity: activities) {
+            orderDetail = new OrderDetail();
+            orderDetail.setActivity(activity);
+            order.addOrderDetail(orderDetail);
+        }
         order.setOrderAt(new Date());
         order=orderRepository.save(order);
         return mapper.map(order,OrderDto.class);

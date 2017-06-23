@@ -1,15 +1,12 @@
 package com.jazasoft.tna.dto;
 
-import com.jazasoft.tna.entity.Buyer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jazasoft.tna.entity.Label;
 import com.jazasoft.tna.entity.OrderDetail;
-import org.hibernate.validator.constraints.Range;
 
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +17,7 @@ public class OrderDto {
 
     private Long id;
 
+    @JsonIgnore
     private Label label;
 
     @NotNull
@@ -38,12 +36,11 @@ public class OrderDto {
     @Min(1)
     private Long qty;
 
-    @NotNull
     private long orderAt;
 
     private  long lastModified;
 
-    private Set<OrderDetail> odereDetails =  new HashSet<>();
+    private Set<OrderDetail> orderDetails =  new HashSet<>();
 
     public OrderDto() {
     }
@@ -122,12 +119,12 @@ public class OrderDto {
         this.lastModified = lastModified;
     }
 
-    public Set<OrderDetail> getOdereDetails() {
-        return odereDetails;
+    public Set<OrderDetail> getOrderDetails() {
+        return orderDetails;
     }
 
-    public void setOdereDetails(Set<OrderDetail> odereDetails) {
-        this.odereDetails = odereDetails;
+    public void setOrderDetails(Set<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 
     @Override
@@ -141,7 +138,7 @@ public class OrderDto {
                 ", orderAt=" + orderAt +
                 ", label=" + label +
                 ", lastModified=" + lastModified +
-                ", odereDetails=" + odereDetails +
+                ", orderDetails=" + orderDetails +
                 '}';
     }
 }

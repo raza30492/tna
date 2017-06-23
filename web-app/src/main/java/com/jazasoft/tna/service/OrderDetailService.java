@@ -50,6 +50,18 @@ public class OrderDetailService {
         logger.debug("save()");
         return orderDetailRepository.save(orderDetail);
     }
+
+    @Transactional
+    public void updateBatch(List<OrderDetail> orderDetails){
+        logger.debug("update()");
+        OrderDetail orderDetail = null;
+        for (OrderDetail od: orderDetails){
+            orderDetail = orderDetailRepository.findOne(od.getId());
+            if (od.getCompletedAt() != null) orderDetail.setCompletedAt(od.getCompletedAt());
+            if (od.getRemarks() != null) orderDetail.setRemarks(od.getRemarks());
+        }
+    }
+
     @Transactional
     public OrderDetail update(OrderDetail orderDetail){
         logger.debug("update()");

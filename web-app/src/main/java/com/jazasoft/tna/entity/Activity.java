@@ -1,8 +1,11 @@
 package com.jazasoft.tna.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -19,11 +22,12 @@ public class Activity implements Serializable {
     @Column(name="id")
     private Long id;
 
+    @NotNull
     @Column(name="lead_time", nullable = false)
     private Long leadTime;
 
-
-
+    @NotNull
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Transient
     private Long activityNameId;
 
